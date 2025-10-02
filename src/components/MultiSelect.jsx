@@ -67,7 +67,7 @@ function MultiSelect({
     return (
         <div ref={containerRef} className="dropdown">
             <div className="input" style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'nowrap', overflowX: 'auto', padding: '8px 10px' }} onClick={() => setOpen(true)}>
-                {selected.length === 0 && <span className="muted">{placeholder}</span>}
+                {/* {selected.length === 0 && <span className="muted">{placeholder}</span>} */}
                 {selected.map(name => (
                     <div key={name} className="chip removable" onClick={() => remove(name)} style={{ flex: '0 0 auto' }}>
                         <span>{name}</span>

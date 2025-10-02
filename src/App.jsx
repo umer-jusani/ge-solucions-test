@@ -1,9 +1,10 @@
-import { useMemo, useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import './index.css'
 import './App.css'
 import CoreTable from './components/CoreTable'
 import MultiSelect from './components/MultiSelect.jsx'
-import { columns, baseUrl } from './constant'
+import { columns, baseUrl, endpointPost, endpointPut } from './constant'
+import useDebounce from './hooks/useDebounce'
 
 function App() {
   const [roleName, setRoleName] = useState('')
@@ -13,42 +14,41 @@ function App() {
   const [payload, setPayload] = useState({
     permissions: []
   });
+  const [backupData, setBackupData] = useState(null)
+  const debouncedRoleName = useDebounce(roleName, 450)
 
   const getRoleModules = async (e) => {
     setLoading(true)
     try {
       const response = await fetch(`${baseUrl}/role/fetchtestrole?roleName=${roleName}`)
       const data = await response.json()
+      !backupData && setBackupData(data || {})
       setSelectedModules(data || {})
     } catch (error) {
       console.error('Error:', error)
+      setSelectedModules(backupData || {})
     } finally {
       setLoading(false)
     }
   }
 
   useEffect(() => {
+    // if (debouncedRoleName) {
     getRoleModules()
-  }, [roleName])
+    // }
+  }, [debouncedRoleName])
 
-  const modulesList = useMemo(() => selectedModules?.modules || [], [selectedModules])
-  const shownModules = useMemo(
-    () => (pickedNames.length ? modulesList.filter(m => pickedNames.includes(m.moduleName)) : modulesList),
-    [modulesList, pickedNames]
-  )
+  const shownModules = pickedNames.length
+    ? selectedModules?.modules?.filter(m => pickedNames.includes(m.moduleName))
+    : selectedModules?.modules
 
   async function togglePermission(permissionId, checked) {
-    if (checked) {
-      setPayload(prev => ({
-        ...prev,
-        permissions: [...prev.permissions, permissionId]
-      }))
-    } else {
-      setPayload(prev => ({
-        ...prev,
-        permissions: prev.permissions.filter(p => p !== permissionId)
-      }))
-    }
+    setPayload(prev => ({
+      ...prev,
+      permissions: checked
+        ? [...prev.permissions, permissionId]
+        : prev.permissions.filter(p => p !== permissionId)
+    }))
   }
 
   const handleSubmitRole = async () => {
@@ -98,15 +98,14 @@ function App() {
       {/* input and multi select */}
       <div className='flex flex-col flex-gap margin-bottom' style={{ gap: 20 }}>
         <div className="flow">
-          <label htmlFor="roleName">Enter Role Name</label>
           <input id="roleName" className="input" placeholder="Enter Role Name" value={roleName} onChange={e => setRoleName(e.target.value)} />
         </div>
 
         <MultiSelect
-          options={modulesList.map(m => m.moduleName).filter(Boolean)}
+          options={selectedModules?.modules?.map(m => m.moduleName).filter(Boolean)}
           defaultValue={[]}
           onChange={(next) => setPickedNames(next)}
-        // placeholder="Pick modules"
+          placeholder="Pick modules"
         />
       </div>
 
