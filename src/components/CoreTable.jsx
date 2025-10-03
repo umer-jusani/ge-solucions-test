@@ -1,14 +1,14 @@
 import React from 'react'
 
-function CoreTable({ columns = [], contentLength = 0, children, isLoading = false }) {
+function TableContainer({ columns = [], contentLength = 0, children, isLoading = false }) {
     return (
         <div className="card" style={{ padding: 0 }}>
             <div className="table-scroll">
                 <table className="core-table">
                     <thead>
                         <tr>
-                            {columns.map((col) => (
-                                <th key={col.key || col.accessor}> <div style={{ textAlign: 'center' }}>{col.header}</div></th>
+                            {columns.map((col, index) => (
+                                <th key={index}> <div style={{ textAlign: 'center' }}>{col.header}</div></th>
                             ))}
                         </tr>
                     </thead>
@@ -35,6 +35,6 @@ function CoreTable({ columns = [], contentLength = 0, children, isLoading = fals
     )
 }
 
-export default CoreTable
+export default TableContainer
 
 
