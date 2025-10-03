@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react'
 
 function MultiSelect({
-    options = [], // array of strings
-    defaultValue = [], // initial selected values (optional)
-    onChange,     // (nextArray) => void
+    options = [],  
+    defaultValue = [], 
+    onChange,    
     placeholder = ''
 }) {
     const [open, setOpen] = useState(false)
@@ -17,7 +17,6 @@ function MultiSelect({
 
     useEffect(() => {
         onChange?.(selected)
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [selected])
 
     useEffect(() => {
